@@ -1,4 +1,7 @@
+import "package:brainbridge/Screens/register.dart";
+import "package:brainbridge/provider/counter.dart";
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
 
 void main() {
   runApp(MyApp());
@@ -9,6 +12,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return MultiProvider(providers: [
+      ChangeNotifierProvider(create: (_) => CountProvider()),
+    ], child: MaterialApp(home: RegisterScreen()));
   }
 }
