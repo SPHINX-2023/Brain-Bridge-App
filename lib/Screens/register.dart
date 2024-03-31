@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:brainbridge/Screens/games_screen.dart';
 import 'package:brainbridge/Screens/login.dart';
+import 'package:brainbridge/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
@@ -429,13 +430,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
       String userage, String userpassword, String userphoneno) async {
     try {
       Response response = await post(
-        Uri.parse("https://brain-bridge-app.onrender.com/register"),
+        Uri.parse("https://jwt-auth-4s5w.onrender.com/register"),
         headers: {
           'Content-Type': "application/json",
         },
         body: jsonEncode(
           {
-            "name": username,
+            "type": "patient",
+            "first_name": username,
             "email": useremail,
             "gender": usergender,
             "age": userage,

@@ -1,10 +1,14 @@
 import 'package:brainbridge/Screens/Games/Sudoku/sudoku.dart';
 import 'package:brainbridge/Screens/Games/Ticktaktoe/TickTackToeBoard.dart';
 import 'package:brainbridge/Screens/eeg.dart';
+import 'package:brainbridge/games/cuttherope/cut_the_rope_page.dart';
+import 'package:brainbridge/games/fallblocks/fallblocks_page.dart';
 import 'package:brainbridge/provider/counter.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class GamesScreen extends StatefulWidget {
   const GamesScreen({Key? key}) : super(key: key);
@@ -145,6 +149,42 @@ class _GamesScreenState extends State<GamesScreen> {
               ),
             ]),
             SizedBox(
+              height: 15,
+            ),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              CutTheRopePage()));
+                },
+                child: Image.asset(
+                  "assets/cuttherope/sprites/icon.png",
+                  width: MediaQuery.of(context).size.width * 0.4,
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => FallBlocksPage()));
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Image.asset(
+                    "assets/fallblocks/sprites/icon.jpg",
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ]),
+            SizedBox(
               height: 50,
             ),
             InkWell(
@@ -174,4 +214,18 @@ class _GamesScreenState extends State<GamesScreen> {
       ),
     );
   }
+
+Future getScore() async {
+  http.Response response = await http.get(
+      Uri.parse("https://brainbridge-backend.onrender.com/score"),);
+  if (response.statusCode == 200) {
+    String data = response.body;
+    print(data);
+    return jsonDecode(data);
+  } else {
+    print(response.statusCode);
+    print(response.body);
+  }
+}
+
 }

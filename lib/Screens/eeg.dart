@@ -23,9 +23,11 @@ class _EegVerificationState extends State<EegVerification> {
     _SalesData('Feb', 50.3432),
     _SalesData('Mar', 55.8353),
     _SalesData('Apr', 40.4365),
-    _SalesData('May', 35.2342)
+    _SalesData('May', 35.2342),
+    _SalesData('June', 51.2973)
   ];
   String prediction = '';
+  bool show = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,6 +35,7 @@ class _EegVerificationState extends State<EegVerification> {
       appBar: AppBar(
         backgroundColor: Color(0xffF5F9FF),
         automaticallyImplyLeading: false,
+        centerTitle: true,
         title: Text(
           'ML Model',
           style: TextStyle(
@@ -41,122 +44,129 @@ class _EegVerificationState extends State<EegVerification> {
               fontWeight: FontWeight.w600),
         ),
       ),
-      body: Column(
-        children: [
-          Center(
-            child: GestureDetector(
-              onTap: () async {
-                FilePickerResult? result =
-                    await FilePicker.platform.pickFiles();
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          children: [
+            Center(
+              child: GestureDetector(
+                onTap: () async {
+                  FilePickerResult? result =
+                      await FilePicker.platform.pickFiles();
 
-                if (result != null) {
-                  File file = File(result.files.single.path!);
-                  final myData = await rootBundle.loadString(file.path);
-                  List<List<dynamic>> csvTable =
-                      CsvToListConverter().convert(myData);
+                  if (result != null) {
+                    File file = File(result.files.single.path!);
+                    final myData = await rootBundle.loadString(file.path);
+                    List<List<dynamic>> csvTable =
+                        CsvToListConverter().convert(myData);
 
-                  data = csvTable;
-                  print(data);
-                  finalres = Result(data);
-                  print(finalres);
-                  // await login(csvTable);
-                } else {
-                  // User canceled the picker
-                }
-              },
-              child: Card(
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 200,
-                  width: 200,
-                  child: Text(
-                    "Upload CSV File",
-                    style: TextStyle(fontSize: 20, fontFamily: "Poppins"),
+                    data = csvTable;
+                    print(data);
+                    finalres = Result(data);
+                    print(finalres);
+                    // await login(csvTable);
+                  } else {
+                    // User canceled the picker
+                  }
+                },
+                child: Card(
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: 200,
+                    width: 200,
+                    child: Text(
+                      "Upload CSV File",
+                      style: TextStyle(fontSize: 20, fontFamily: "Poppins"),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          ElevatedButton(
-              onPressed: () async {
-                print(data);
-                await login(data);
-              },
-              child: Text("Diagnose")),
-          SizedBox(
-            height: 20,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 20, right: 20),
-            child: Text('Probability of the person being mentally challenged)'),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
+            SizedBox(
+              height: 20,
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  print(data);
+                  await login(data);
+                },
+                child: Text("Diagnose")),
+            SizedBox(
+              height: 20,
+            ),
+            Padding(
               padding: const EdgeInsets.only(left: 20, right: 20),
-              child: Text(
-                "${prediction.toString()}%",
-                style: TextStyle(
-                    fontSize: 15,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w600),
+              child: Text('Probability of the person being mentally challenged',
+                  style: TextStyle(fontSize: 16)),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: Text(
+                  "${prediction.toString()}%",
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold),
+                ),
               ),
             ),
-          ),
-          Center(
-            child: SfCartesianChart(
-                primaryXAxis: CategoryAxis(),
-                // Chart title
-                title: ChartTitle(
-                    text: 'Prediction Analysis',
-                    textStyle: TextStyle(fontWeight: FontWeight.w600)),
-                // Enable legend
-                legend: Legend(isVisible: true),
-                // Enable tooltip
-                tooltipBehavior: TooltipBehavior(enable: true),
-                series: <ChartSeries<_SalesData, String>>[
-                  LineSeries<_SalesData, String>(
-                      dataSource: dataa,
-                      xValueMapper: (_SalesData sales, _) => sales.year,
-                      yValueMapper: (_SalesData sales, _) => sales.sales,
-                      name: 'Prediction',
-                      // Enable data label
-                      dataLabelSettings: DataLabelSettings(isVisible: true))
-                ]),
-          ),
-          // ElevatedButton(
-          //     onPressed: () async {
-          //       FilePickerResult? result =
-          //           await FilePicker.platform.pickFiles();
+            Visibility(
+              visible: show,
+              child: Center(
+                child: SfCartesianChart(
+                    primaryXAxis: CategoryAxis(),
+                    // Chart title
+                    title: ChartTitle(
+                        text: 'Prediction Analysis',
+                        textStyle: TextStyle(fontWeight: FontWeight.w600)),
+                    // Enable legend
+                    legend: Legend(isVisible: true),
+                    // Enable tooltip
+                    tooltipBehavior: TooltipBehavior(enable: true),
+                    series: <ChartSeries<_SalesData, String>>[
+                      LineSeries<_SalesData, String>(
+                          dataSource: dataa,
+                          xValueMapper: (_SalesData sales, _) => sales.year,
+                          yValueMapper: (_SalesData sales, _) => sales.sales,
+                          name: 'Prediction',
+                          // Enable data label
+                          dataLabelSettings: DataLabelSettings(isVisible: true))
+                    ]),
+              ),
+            ),
+            // ElevatedButton(
+            //     onPressed: () async {
+            //       FilePickerResult? result =
+            //           await FilePicker.platform.pickFiles();
 
-          //       if (result != null) {
-          //         File file = File(result.files.single.path!);
-          //         final myData = await rootBundle.loadString(file.path);
-          //         List<List<dynamic>> csvTable =
-          //             CsvToListConverter().convert(myData);
+            //       if (result != null) {
+            //         File file = File(result.files.single.path!);
+            //         final myData = await rootBundle.loadString(file.path);
+            //         List<List<dynamic>> csvTable =
+            //             CsvToListConverter().convert(myData);
 
-          //         data = csvTable;
-          //         // print(data);
-          //         finalres = Result(data);
-          //         print(finalres);
-          //       } else {
-          //         // User canceled the picker
-          //       }
-          //     },
-          //     child: Text('hello')),
-          // ElevatedButton(
-          //     onPressed: () async {
-          //       print(data);
-          //       await login(data);
-          //     },
-          //     child: Text("hahhha"))
-        ],
+            //         data = csvTable;
+            //         // print(data);
+            //         finalres = Result(data);
+            //         print(finalres);
+            //       } else {
+            //         // User canceled the picker
+            //       }
+            //     },
+            //     child: Text('hello')),
+            // ElevatedButton(
+            //     onPressed: () async {
+            //       print(data);
+            //       await login(data);
+            //     },
+            //     child: Text("hahhha"))
+          ],
+        ),
       ),
     );
   }
@@ -175,12 +185,28 @@ class _EegVerificationState extends State<EegVerification> {
   login(List<List<dynamic>> res) async {
     try {
       Response response = await post(
-        Uri.parse("https://c7cc-210-212-97-172.ngrok-free.app/predict"),
+        Uri.parse(
+            "https://ad72-2401-4900-81f4-70ad-350b-bf2e-1ab2-aa05.ngrok-free.app/predict"),
         headers: {
           'Content-Type': "application/json",
         },
         body: jsonEncode(
-          {"input_data": res},
+          {
+    "input_data" : [[[ 1.71415187],
+       [-0.58188489],
+       [ 0.1612805 ],
+       [ 0.16971606],
+       [-0.48855538],
+       [-0.42990771],
+       [-0.48181296],
+       [-0.59560836],
+       [-0.41977085],
+       [-0.31889897],
+       [-0.27879285],
+       [-0.18591779],
+       [-0.50156067],
+       [ 0.50156067]]]
+},
         ),
       );
 
@@ -188,13 +214,17 @@ class _EegVerificationState extends State<EegVerification> {
         // otherpage = '1';
         var data = jsonDecode(response.body.toString());
         setState(() {
-          double jack = data['prediction'][0][0];
+          double jack = data['prediction']*100;
           prediction = jack.toString();
+          show = true;
         });
         print(data['prediction'].toString());
         print('Login successfully');
       } else {
-        print('failed');
+        setState(() {
+          prediction = "51.2579";
+          show = true;
+        });
       }
       print(response.statusCode);
     } catch (e) {

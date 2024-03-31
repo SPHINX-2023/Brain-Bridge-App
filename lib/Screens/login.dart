@@ -190,6 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           print(email.text);
                           print(pass.text);
                           String res = await login(email.text, pass.text);
+                          print(res);
                           // if (res == "Success") {
                           Navigator.push(
                               context,
@@ -261,15 +262,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   login(String useremail, String password) async {
     try {
-      Response response = await http.post(
-          Uri.parse("https://brain-bridge-app.onrender.com/login"),
-          headers: {
-            'Content-Type': "application/json",
-          },
-          body: jsonEncode({
-            "email": useremail,
-            "password": password,
-          }));
+      Response response =
+          await http.post(Uri.parse("https://jwt-auth-4s5w.onrender.com/login"),
+              headers: {
+                'Content-Type': "application/json",
+              },
+              body: jsonEncode({
+                "email": useremail,
+                "password": password,
+              }));
       print(response.statusCode);
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(response.body.toString());
